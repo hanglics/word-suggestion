@@ -1,0 +1,6 @@
+*.pyc
+.DS_Store
+data/
+/__pycache__
+similarity.txt
+test.txt
