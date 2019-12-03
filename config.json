@@ -1,9 +1,9 @@
 {
     "elasticsearch" : {
-        "url" : "",
-        "username" : "",
-        "secret" : "",
-        "index_name" : "",
+        "url" : "http://ielab-pubmed-index.uqcloud.net",
+        "username" : "ielab",
+        "secret" : "TMiFozpDeCaTzBwVWAUhcpB4kCNchL",
+        "index_name" : "medline2018sample",
         "size" : 5
     }
 }

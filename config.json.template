@@ -1,0 +1,9 @@
+{
+    "elasticsearch" : {
+        "url" : "",
+        "username" : "",
+        "secret" : "",
+        "index_name" : "",
+        "size" : 5
+    }
+}
