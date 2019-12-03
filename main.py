@@ -6,7 +6,6 @@ from methods import *
 
 app = Flask(__name__)
 api = Api(app)
-app.config["DEBUG"] = True
 
 class getWordsSuggestions(Resource):
     def get(self):
