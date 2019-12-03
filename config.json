@@ -3,6 +3,7 @@
         "url" : "",
         "username" : "",
         "secret" : "",
-        "index_name" : ""
+        "index_name" : "",
+        "size" : 5
     }
 }
