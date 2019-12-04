@@ -2,16 +2,18 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 import json
 from flask_jsonpify import jsonpify
-from methods import *
+from middleware import *
 
 app = Flask(__name__)
 api = Api(app)
+app.config["DEBUG"] = True
 
 class getWordsSuggestions(Resource):
+    
     def get(self):
-        if 'term' in request.args and 'size' in request.args:
+        if 'term' in request.args and 'retSize' in request.args:
             word = request.args["term"]
-            size = request.args["size"]
+            size = request.args["retSize"]
             res = getWordSuggestions(word, int(size))
             return jsonpify(res)
         else:

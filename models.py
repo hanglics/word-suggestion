@@ -1,14 +1,24 @@
 import requests
 import json
 import string
-from similarity import *
+from pmisimilarity import *
+from cui_methods import *
 from nltk.corpus import stopwords
 import nltk
 nltk.download('stopwords')
 
+# Construct the CUI matrix and store as a global variable
+cuiDistanceFile = "data/cui2vec_precomputed.bin"
+matrix = readCuiDistance(cuiDistanceFile)
+print("CUI Distance File Loaded.")
+
+# Construct the CUI to Title dict and store as a global variable
+titleFile = "data/cuis.csv"
+cui2titleDict = readCuiTitle(titleFile)
+print("CUI To Term Dictionary Loaded.")
+
 class Index():
     """An index of the documents used. Stores information about documents and terms"""
-
     def __init__(self, word):
         with open('config.json') as configFile:
             config = json.load(configFile)
@@ -71,7 +81,7 @@ class Index():
                 finalRes.append(item)
         self.docs = finalRes
 
-    def similarity(self, s1, s2):
+    def pmiSimilarity(self, s1, s2):
         """
         calculates the similarity of two words in the collection
         """
@@ -80,3 +90,62 @@ class Index():
         f2 = self.getDocumentCount([s2])
         f12 = self.getDocumentCount([s1, s2])
         return calculateSimilarity(D, f1, f2, f12)
+
+def getESWordsRanking(word, size):
+    collection = Index(word)
+    wordsRanking = []
+    for term in collection.docs:
+        similarityScore = collection.pmiSimilarity(word, term)
+        wordInfo = {
+            "term" : term,
+            "score" : float("{0:.3f}".format(similarityScore))
+        }
+        wordsRanking.append(wordInfo)
+    totalResult = sorted(wordsRanking, key = lambda i : i["score"], reverse = True)
+    returned = []
+    count = 0
+    for item in totalResult:
+        if count < size:
+            count += 1
+            returned.append(item)
+    return returned
+    
+class CUI2Vec():
+    
+    def __init__(self, word):
+        data = word
+        response = requests.post('http://ielab-metamap.uqcloud.net/mm/candidates', data=data)
+        content = json.loads(response.content)
+        wordCUI = content[0]["CandidateCUI"]
+        self.wordCUI = wordCUI
+        
+    def findAlternativeTerms(self, size):
+        wordCUI = self.wordCUI
+        intWordCUI = cui2int(wordCUI)
+        alternatives = matrix[intWordCUI]
+        res = convertCUI2Term(alternatives, size)
+        return res
+        
+def convertCUI2Term(alternatives, size):
+    infos = []
+    for key in alternatives.keys():
+        term = ""
+        try:
+            term = cui2titleDict[str(key)]
+        except:
+            term = ""
+        if term is not "":
+            info = {
+                "score" : alternatives[key],
+                "cui" : key,
+                "term" : term
+            }
+            infos.append(info)
+    returned = []
+    count = 0
+    rankedInfo = sorted(infos, key = lambda i : i["score"], reverse = True)
+    for item in rankedInfo:
+        if count < size:
+            count += 1
+            returned.append(item)
+    return returned
