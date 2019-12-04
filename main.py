@@ -6,7 +6,8 @@ from middleware import *
 
 app = Flask(__name__)
 api = Api(app)
-app.config["DEBUG"] = True
+# Development server debug mode
+# app.config["DEBUG"] = True
 
 class getWordsSuggestions(Resource):
     
@@ -25,9 +26,10 @@ class getWordsSuggestions(Resource):
             res = getWordSuggestions(word, size=0, pool=0)
             return jsonpify(res)
             
-# /search?retSize=5&pool=5&term=cancer
+# example url -> /search?retSize=5&pool=5&term=cancer
 api.add_resource(getWordsSuggestions, '/search')
 
-if __name__ == '__main__':
-    print("Service runs on port: 6688")
-    app.run(port='6688')
+# For use of development server, DO NOT use for production
+# if __name__ == '__main__':
+#     print("Service runs on port: 6688")
+    # app.run(port='6688')

@@ -8,19 +8,26 @@ import nltk
 nltk.download('stopwords')
 
 # Construct the CUI matrix and store as a global variable
+print("--------------------------------------------------")
+print("Loading CUI Distance File...")
 cuiDistanceFile = "data/cui2vec_precomputed.bin"
 matrix = readCuiDistance(cuiDistanceFile)
 print("CUI Distance File Loaded.")
 
 # Construct the CUI to Title dict and store as a global variable
+print("--------------------------------------------------")
+print("Loading CUI To Term Dictionary...")
 titleFile = "data/cuis.csv"
 cui2titleDict = readCuiTitle(titleFile)
 print("CUI To Term Dictionary Loaded.")
 
 # Load the config file
+print("--------------------------------------------------")
+print("Loading Config File...")
 with open('config.json') as configFile:
     config = json.load(configFile)
 print("Config File Loaded.")
+print("--------------------------------------------------")
 
 class Index():
     """An index of the documents used. Stores information about documents and terms"""
