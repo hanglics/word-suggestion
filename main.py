@@ -11,14 +11,21 @@ app.config["DEBUG"] = True
 class getWordsSuggestions(Resource):
     
     def get(self):
-        if 'term' in request.args and 'retSize' in request.args:
+        if 'term' in request.args and 'retSize' in request.args and 'pool' in request.args:
             word = request.args["term"]
             size = request.args["retSize"]
-            res = getWordSuggestions(word, int(size))
+            pool = request.args['pool']
+            res = getWordSuggestions(word, int(size), int(pool))
             return jsonpify(res)
+        elif 'term' not in request.args:
+            res = []
+            return res
         else:
-            return jsonpify([{"ERROR" : "No Term Or Size Provided."}])
-    
+            word = request.args["term"]
+            res = getWordSuggestions(word, size=0, pool=0)
+            return jsonpify(res)
+            
+# /search?retSize=5&pool=5&term=cancer
 api.add_resource(getWordsSuggestions, '/search')
 
 if __name__ == '__main__':

@@ -1,9 +1,8 @@
 {
-    "elasticsearch" : {
-        "url" : "",
-        "username" : "",
-        "secret" : "",
-        "index_name" : "",
-        "size" : 5
-    }
+    "url" : "",
+    "username" : "",
+    "secret" : "",
+    "index_name" : "",
+    "default_pool" : 5,
+    "default_retSize" : 5
 }

@@ -17,20 +17,25 @@ titleFile = "data/cuis.csv"
 cui2titleDict = readCuiTitle(titleFile)
 print("CUI To Term Dictionary Loaded.")
 
+# Load the config file
+with open('config.json') as configFile:
+    config = json.load(configFile)
+print("Config File Loaded.")
+
 class Index():
     """An index of the documents used. Stores information about documents and terms"""
-    def __init__(self, word):
-        with open('config.json') as configFile:
-            config = json.load(configFile)
-        elasticsearchConfig = config["elasticsearch"]
-        self.username = elasticsearchConfig["username"]
-        self.secret = elasticsearchConfig["secret"]
-        self.preurl = elasticsearchConfig["url"]
-        self.indexName = elasticsearchConfig["index_name"]
-        self.size = elasticsearchConfig["size"]
+    def __init__(self, word, pool):
+        self.username = config["username"]
+        self.secret = config["secret"]
+        self.preurl = config["url"]
+        self.indexName = config["index_name"]
+        if pool is 0:
+            self.pool = config["default_pool"]
+        else :
+            self.pool = pool
         url = self.preurl + "/" + self.indexName + "/_search"
         param = {
-            "size" : self.size,
+            "size" : self.pool,
             "q" : word
         }
         response = requests.get(url, params=param, auth=(self.username, self.secret))
@@ -91,8 +96,8 @@ class Index():
         f12 = self.getDocumentCount([s1, s2])
         return calculateSimilarity(D, f1, f2, f12)
 
-def getESWordsRanking(word, size):
-    collection = Index(word)
+def getESWordsRanking(word, size, pool):
+    collection = Index(word, pool)
     wordsRanking = []
     for term in collection.docs:
         similarityScore = collection.pmiSimilarity(word, term)
@@ -104,6 +109,8 @@ def getESWordsRanking(word, size):
     totalResult = sorted(wordsRanking, key = lambda i : i["score"], reverse = True)
     returned = []
     count = 0
+    if size is 0:
+        size = config["default_retSize"]
     for item in totalResult:
         if count < size:
             count += 1
@@ -111,7 +118,6 @@ def getESWordsRanking(word, size):
     return returned
     
 class CUI2Vec():
-    
     def __init__(self, word):
         data = word
         response = requests.post('http://ielab-metamap.uqcloud.net/mm/candidates', data=data)
@@ -120,10 +126,14 @@ class CUI2Vec():
         self.wordCUI = wordCUI
         
     def findAlternativeTerms(self, size):
+        if size is 0:
+            self.size = config["default_retSize"]
+        else:
+            self.size = size
         wordCUI = self.wordCUI
         intWordCUI = cui2int(wordCUI)
         alternatives = matrix[intWordCUI]
-        res = convertCUI2Term(alternatives, size)
+        res = convertCUI2Term(alternatives, self.size)
         return res
         
 def convertCUI2Term(alternatives, size):
