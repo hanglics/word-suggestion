@@ -3,7 +3,7 @@ from models import waitressConfig
 import main
 
 # Production server
-serve(
+serve (
     main.app, 
     host=waitressConfig["host"], 
     port=waitressConfig["port"],
@@ -11,4 +11,4 @@ serve(
     ipv6=waitressConfig["ipv6"], 
     threads=waitressConfig["threads"],
     url_scheme=waitressConfig["url_scheme"]
-    )
+)
