@@ -1,16 +1,29 @@
 {
-    // host to run this service on
-    "waitress_host" : "localhost",
-    // url for elasticsearch index
-    "url" : "",
-    // username for elasticsearch index
-    "username" : "",
-    // secret for elasticsearch index
-    "secret" : "",
-    // the index name for elasticsearch index
-    "index_name" : "",
-    // default number of documents retrieved by elasticsearch index search
-    "default_pool" : 5,
-    // default number of alternative terms returned
-    "default_retSize" : 5
+    "ES" : {
+        // url for elasticsearch index
+        "url" : "localhost",
+        // username for elasticsearch index
+        "username" : "admin",
+        // secret for elasticsearch index
+        "secret" : "pass",
+        // the index name for elasticsearch index
+        "index_name" : "medical",
+        // default number of documents retrieved by elasticsearch index search
+        "default_pool" : 5,
+        // default number of alternative terms returned
+        "default_retSize" : 5
+    },
+    "Waitress" : {
+        // host to run this service on
+        "host" : "loclhost",
+        // port to listen
+        "port": "6688",
+        // enable/disable ipv4
+        "ipv4" : true,
+        // enable/disable ipv6 
+        "ipv6" : true,
+        // threads to use for this app
+        "threads" : 6,
+        "url_scheme" : "http"
+    }
 }

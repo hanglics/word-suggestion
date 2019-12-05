@@ -1,14 +1,14 @@
 from waitress import serve
-from models import config
+from models import waitressConfig
 import main
 
 # Production server
 serve(
     main.app, 
-    host=config["waitress_host"], 
-    port="6688",
-    ipv4=True, 
-    ipv6=True, 
-    threads=6,
-    url_scheme="http"
+    host=waitressConfig["host"], 
+    port=waitressConfig["port"],
+    ipv4=waitressConfig["ipv4"], 
+    ipv6=waitressConfig["ipv6"], 
+    threads=waitressConfig["threads"],
+    url_scheme=waitressConfig["url_scheme"]
     )

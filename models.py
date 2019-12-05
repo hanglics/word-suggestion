@@ -27,18 +27,20 @@ print("--------------------------------------------------")
 print("Loading Config File...")
 with open('config.json') as configFile:
     config = json.load(configFile)
+ESConfig = config["ES"]
+waitressConfig = config["Waitress"]
 print("Config File Loaded.")
 print("--------------------------------------------------")
 
 class Index():
     """An index of the documents used. Stores information about documents and terms"""
     def __init__(self, word, pool):
-        self.username = config["username"]
-        self.secret = config["secret"]
-        self.preurl = config["url"]
-        self.indexName = config["index_name"]
+        self.username = ESConfig["username"]
+        self.secret = ESConfig["secret"]
+        self.preurl = ESConfig["url"]
+        self.indexName = ESConfig["index_name"]
         if pool is 0:
-            self.pool = config["default_pool"]
+            self.pool = ESConfig["default_pool"]
         else :
             self.pool = pool
         url = self.preurl + "/" + self.indexName + "/_search"
@@ -123,7 +125,7 @@ class Index():
         returned = []
         count = 0
         if size is 0:
-            size = config["default_retSize"]
+            size = ESConfig["default_retSize"]
         for item in totalResult:
             if count < size:
                 count += 1
@@ -140,7 +142,7 @@ class CUI2Vec():
         
     def findAlternativeTerms(self, size):
         if size is 0:
-            self.size = config["default_retSize"]
+            self.size = ESConfig["default_retSize"]
         else:
             self.size = size
         wordCUI = self.wordCUI
