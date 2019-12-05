@@ -4,6 +4,7 @@ import string
 from pmisimilarity import *
 from cui_methods import *
 from nltk.corpus import stopwords
+from threading import Thread
 import nltk
 nltk.download('stopwords')
 
@@ -52,6 +53,7 @@ class Index():
         self.createDocuments()
         query = []
         self.D = self.getDocumentCount(query)
+        self.wordsRanking = [{} for item in self.docs]
         
     def getDocumentCount(self, query):
         url = self.preurl + "/" + self.indexName + "/_count"
@@ -93,7 +95,7 @@ class Index():
                 finalRes.append(item)
         self.docs = finalRes
 
-    def pmiSimilarity(self, s1, s2):
+    def pmiSimilarity(self, s1, s2, index):
         """
         calculates the similarity of two words in the collection
         """
@@ -101,28 +103,32 @@ class Index():
         f1 = self.getDocumentCount([s1])
         f2 = self.getDocumentCount([s2])
         f12 = self.getDocumentCount([s1, s2])
-        return calculateSimilarity(D, f1, f2, f12)
-
-def getESWordsRanking(word, size, pool):
-    collection = Index(word, pool)
-    wordsRanking = []
-    for term in collection.docs:
-        similarityScore = collection.pmiSimilarity(word, term)
-        wordInfo = {
-            "term" : term,
-            "score" : float("{0:.3f}".format(similarityScore))
+        score = calculateSimilarity(D, f1, f2, f12)
+        self.wordsRanking[index] = {
+            "term" : s2,
+            "score" : float("{0:.3f}".format(score))
         }
-        wordsRanking.append(wordInfo)
-    totalResult = sorted(wordsRanking, key = lambda i : i["score"], reverse = True)
-    returned = []
-    count = 0
-    if size is 0:
-        size = config["default_retSize"]
-    for item in totalResult:
-        if count < size:
-            count += 1
-            returned.append(item)
-    return returned
+
+    def getESWordsRanking(self, word, size, pool):
+        threads = []
+        for i in range(len(self.docs)):
+            process = Thread(target=self.pmiSimilarity, args=[word, self.docs[i], i])
+            process.start()
+            threads.append(process)
+            
+        for process in threads:
+            process.join()
+        
+        totalResult = sorted(self.wordsRanking, key = lambda i : i["score"], reverse = True)
+        returned = []
+        count = 0
+        if size is 0:
+            size = config["default_retSize"]
+        for item in totalResult:
+            if count < size:
+                count += 1
+                returned.append(item)
+        return returned
     
 class CUI2Vec():
     def __init__(self, word):

@@ -32,4 +32,4 @@ api.add_resource(getWordsSuggestions, '/search')
 # For use of development server, DO NOT use for production
 # if __name__ == '__main__':
 #     print("Service runs on port: 6688")
-    # app.run(port='6688')
+#     app.run(port='6688')
