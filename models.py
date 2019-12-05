@@ -41,7 +41,9 @@ class Index():
         self.indexName = ESConfig["index_name"]
         if pool is 0:
             self.pool = ESConfig["default_pool"]
-        else :
+        elif pool > ESConfig["max_pool"]:
+            self.pool = ESConfig["max_pool"]
+        else:
             self.pool = pool
         url = self.preurl + "/" + self.indexName + "/_search"
         param = {
@@ -126,6 +128,8 @@ class Index():
         count = 0
         if size is 0:
             size = ESConfig["default_retSize"]
+        elif size > ESConfig["max_retSize"]:
+            size = ESConfig["max_retSize"]
         for item in totalResult:
             if count < size:
                 count += 1
@@ -143,6 +147,8 @@ class CUI2Vec():
     def findAlternativeTerms(self, size):
         if size is 0:
             self.size = ESConfig["default_retSize"]
+        elif size > ESConfig["max_retSize"]:
+            self.size = ESConfig["max_retSize"]
         else:
             self.size = size
         wordCUI = self.wordCUI
