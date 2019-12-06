@@ -18,27 +18,25 @@ pip3 install waitress flask flask-restful flask_jsonpify requests nltk
 
 ### Development
 
-To run in development mode:
-
-Uncomment the following code section in `main.py`
-
-```
-app.config["DEBUG"] = True
-
-if __name__ == '__main__':
-    print("Service runs on port: 6688")
-    app.run(port='6688')
-```
+To run in development mode
 
 Make sure to add a `config.json` file to configure the server and the elastic search index
 
 After setting up the config file, use the following command to run the development server:
 
 ```
+python3 main.py --dev
+```
+or
+```
+python3 main.py -d
+```
+or
+```
 python3 main.py
 ```
 
-The service will be deployed to localhost and port 6688
+The service will be deployed to host and port specified in config
 
 The API can be accessed through:
 
@@ -50,24 +48,15 @@ Where `retSize` and `pool` are optional params, `retSize` specifies the how many
 
 ### Production
 
-For production server, we are using waitress
-
-Comment the code in `main.py`
-
-```
-app.config["DEBUG"] = True
-
-if __name__ == '__main__':
-    print("Service runs on port: 6688")
-    app.run(port='6688')
-```
-
-Configure the host for waitress server in `config.json` file
-
-Run by using the following command:
+For production server, configure the host for waitress server in `config.json` file.
+And using waitress server by calling
 
 ```
-python3 waitress_server.py
+python3 main.py --prod
+```
+or
+```
+python3 main.py -p
 ```
 
 By calling API:
