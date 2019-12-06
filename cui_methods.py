@@ -3,6 +3,8 @@ import csv
 
 nCols = 20
 
+# read the bin file and construct the matrix
+# Thanks to Jimmy
 def readCuiDistance(distanceFile):
     with open(distanceFile, "rb") as fb:
         b = fb.read()
@@ -33,9 +35,12 @@ def readCuiDistance(distanceFile):
             
     return matrix
 
+# convert the cui to int
+# Thanks to Jimmy
 def cui2int(CUI):
     return int(CUI.replace("C", "").replace("c", ""))
 
+# a method to read the cui -> term csv file and construct a dict
 def readCuiTitle(titleFile):
     cui2titleDict = {}
     with open(titleFile) as csv_file:

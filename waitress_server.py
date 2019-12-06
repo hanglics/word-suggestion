@@ -2,7 +2,8 @@ from waitress import serve
 from models import waitressConfig
 import main
 
-# Production server
+# Construct the production server using waitress
+# can be configured through changing in config.json
 serve (
     main.app, 
     host=waitressConfig["host"], 

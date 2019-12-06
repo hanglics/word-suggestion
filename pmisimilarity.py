@@ -10,7 +10,7 @@ def npmi(xy, pmi):
 
 def calculateSimilarity(D, f1, f2, f12):
     """
-    calculates the +PMI similarity
+    calculates the PMI similarity
     """
     x = (f1 + 1) / (D + 1)
     y = (f2 + 1) / (D + 1)

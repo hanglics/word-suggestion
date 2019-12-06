@@ -12,7 +12,7 @@
         "default_pool" : 5,
         // default number of alternative terms returned
         "default_retSize" : 5,
-        "max_retSize" : 20,
+        "max_retSize" : 10,
         "max_pool" : 20
     },
     "Waitress" : {
