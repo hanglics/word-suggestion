@@ -151,7 +151,7 @@ class Index():
         score = calculateSimilarity(D, f1, f2, f12)
         self.wordsRanking[index] = {
             "term" : s2,
-            "score" : float("{0:.3f}".format(score))
+            "score" : score
         }
 
     """
@@ -253,7 +253,6 @@ def convertCUI2Term(alternatives, size):
         if term is not "":
             info = {
                 "score" : alternatives[key],
-                "cui" : key,
                 "term" : term
             }
             infos.append(info)
@@ -266,3 +265,18 @@ def convertCUI2Term(alternatives, size):
             count += 1
             returned.append(item)
     return returned
+
+def minmax(list1, list2):
+    maximumScoreTermL1 = max(list1, key=lambda x:x['score'])['score']
+    minimumScoreTermL1 = min(list1, key=lambda x:x['score'])['score']
+    maximumScoreTermL2 = max(list2, key=lambda x:x['score'])['score']
+    minimumScoreTermL2 = min(list2, key=lambda x:x['score'])['score']
+    for term1 in list1:
+        term1['score'] = (term1['score'] - minimumScoreTermL1) / (maximumScoreTermL1 - minimumScoreTermL1)
+    for term2 in list2:
+        term2['score'] = (term2['score'] - minimumScoreTermL2) / (maximumScoreTermL2 - minimumScoreTermL2)
+    unorderedRes = list1 + list2
+    finalRes = sorted(unorderedRes, key = lambda i : i['score'], reverse = True)
+    for t in finalRes:
+        t['score'] = float("{0:.3f}".format(t['score']))
+    return finalRes

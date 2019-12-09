@@ -11,7 +11,5 @@ def getWordSuggestions(word, size, pool):
     esRes = collection.getESWordsRanking(word, size, pool)
     cui2vec = CUI2Vec(word)
     res = cui2vec.findAlternativeTerms(size)
-    return {
-        "ES" : esRes,
-        "CUI" : res
-    }
+    normalizedScoreRes = minmax(esRes, res)
+    return normalizedScoreRes
