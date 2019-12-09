@@ -170,7 +170,10 @@ class Index():
         for process in threads:
             process.join()
         # sort the items in descending order by scores
-        totalResult = sorted(self.wordsRanking, key = lambda i : i["score"], reverse = True)
+        try:
+            totalResult = sorted(self.wordsRanking, key = lambda i : i['score'], reverse = True)
+        except:
+            self.getESWordsRanking(word, size, pool)
         returned = []
         count = 0
         # similar to pool, check the size constraints
@@ -259,7 +262,10 @@ def convertCUI2Term(alternatives, size):
     returned = []
     count = 0
     # sort the list by scores in descending order
-    rankedInfo = sorted(infos, key = lambda i : i["score"], reverse = True)
+    try:
+        rankedInfo = sorted(infos, key = lambda i : i['score'], reverse = True)
+    except:
+        convertCUI2Term(alternatives, size)
     for item in rankedInfo:
         if count < size:
             count += 1
@@ -276,7 +282,10 @@ def minmax(list1, list2, size):
     for term2 in list2:
         term2['score'] = (term2['score'] - minimumScoreTermL2) / (maximumScoreTermL2 - minimumScoreTermL2)
     unorderedRes = list1 + list2
-    finalRes = sorted(unorderedRes, key = lambda i : i['score'], reverse = True)
+    try:
+        finalRes = sorted(unorderedRes, key = lambda i : i['score'], reverse = True)
+    except:
+        minmax(list1, list2, size)
     for t in finalRes:
         t['score'] = float("{0:.3f}".format(t['score']))
     if size < len(finalRes):
