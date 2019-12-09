@@ -266,7 +266,7 @@ def convertCUI2Term(alternatives, size):
             returned.append(item)
     return returned
 
-def minmax(list1, list2):
+def minmax(list1, list2, size):
     maximumScoreTermL1 = max(list1, key=lambda x:x['score'])['score']
     minimumScoreTermL1 = min(list1, key=lambda x:x['score'])['score']
     maximumScoreTermL2 = max(list2, key=lambda x:x['score'])['score']
@@ -279,4 +279,7 @@ def minmax(list1, list2):
     finalRes = sorted(unorderedRes, key = lambda i : i['score'], reverse = True)
     for t in finalRes:
         t['score'] = float("{0:.3f}".format(t['score']))
-    return finalRes
+    if size < len(finalRes):
+        return finalRes[0:size]
+    else:
+        return finalRes

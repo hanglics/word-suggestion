@@ -4,7 +4,7 @@ import json
 from flask_jsonpify import jsonpify
 from middleware import *
 from waitress import serve
-from models import waitressConfig
+from models import waitressConfig, ESConfig
 import sys
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ class getWordsSuggestions(Resource):
             return res
         else:
             word = request.args["term"]
-            res = getWordSuggestions(word, size=0, pool=0)
+            res = getWordSuggestions(word, size=ESConfig["default_retSize"], pool=ESConfig["default_pool"])
             return jsonpify(res)
             
 # example url -> /search?retSize=5&pool=5&term=cancer
