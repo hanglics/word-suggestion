@@ -13,10 +13,11 @@ api = Api(app)
 class getWordsSuggestions(Resource):
     def get(self):
         word = request.args["term"] if "term" in request.args else ""
-        size = request.args["retSize"] if "retSize" in request.args else ESConfig["default_retSize"]
-        pool = request.args["pool"] if "pool" in request.args else ESConfig["default_pool"]
-        merged = request.args["merged"] if "merged" in request.args else ESConfig["merged"]
-        sources = request.args["sources"] if "sources" in request.args else ESConfig["sources"]
+        size = request.args["retSize"] if "retSize" in request.args and request.args["retSize"] != "" else ESConfig["default_retSize"]
+        pool = request.args["pool"] if "pool" in request.args and request.args["pool"] != "" else ESConfig["default_pool"]
+        merged = request.args["merged"] if "merged" in request.args and request.args["merged"] != "" else ESConfig["merged"]
+        sources = request.args["sources"] if "sources" in request.args and request.args["sources"] != "" else ESConfig["sources"]
+                
         if word == "":
             res = []
             return res

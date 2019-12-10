@@ -276,7 +276,6 @@ def minmax(res, size):
     unorderedRes = []
     scoreDict = {}
     for k in res:
-        print(res[k])
         if res[k] != []:
             maxScore = max(res[k], key=lambda x:x["score"])["score"]
             minScore = min(res[k], key=lambda x:x["score"])["score"]
