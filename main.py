@@ -12,24 +12,22 @@ api = Api(app)
 
 class getWordsSuggestions(Resource):
     def get(self):
-        if 'term' in request.args and 'retSize' in request.args and 'pool' in request.args:
-            word = request.args["term"]
-            size = request.args["retSize"]
-            pool = request.args['pool']
-            res = getWordSuggestions(word, int(size), int(pool))
-            return jsonpify(res)
-        elif 'term' not in request.args:
+        word = request.args["term"] if "term" in request.args else ""
+        size = request.args["retSize"] if "retSize" in request.args else ESConfig["default_retSize"]
+        pool = request.args["pool"] if "pool" in request.args else ESConfig["default_pool"]
+        merged = request.args["merged"] if "merged" in request.args else ESConfig["merged"]
+        sources = request.args["sources"] if "sources" in request.args else ESConfig["sources"]
+        if word == "":
             res = []
             return res
         else:
-            word = request.args["term"]
-            res = getWordSuggestions(word, size=ESConfig["default_retSize"], pool=ESConfig["default_pool"])
-            return jsonpify(res)
+            res = getWordSuggestions(word, int(size), int(pool), merged, sources)
+            return jsonpify(res);
             
-# example url -> /search?retSize=5&pool=5&term=cancer
-api.add_resource(getWordsSuggestions, '/search')
+# example url -> /search?retSize=5&pool=5&sources=cui,es&merged=false&term=cancer
+api.add_resource(getWordsSuggestions, "/search")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     arguments = sys.argv
     if len(arguments) == 1:
         # Development server debug mode

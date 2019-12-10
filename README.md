@@ -41,10 +41,21 @@ The service will be deployed to host and port specified in config
 The API can be accessed through:
 
 ```
-http://localhost:6688/search?retSize=5&pool=5&term=cancer
+http://localhost:6688/search?retSize=10&pool=20&sources=cui,es&merged=false&term=cancer
 ```
 
-Where `retSize` and `pool` are optional params, `retSize` specifies the how many alternative terms to be returned from the search, `pool` specifies the number of relevant documents used in elastic search index for finding the alternative terms. (`retSize` default is 5 and the same as `pool`)
+Parameters:
+```
+retSize = 10
+pool = 20
+sources = cui,es
+merged = false
+term = cancer
+```
+
+Where `retSize` and `pool` are optional params, `retSize` specifies the how many alternative terms to be returned from the search, `pool` specifies the number of relevant documents used in elastic search index for finding the alternative terms. (`retSize` default is 10 and the `pool` is 20).
+
+Added another two parameters `sources` and `merged`, where `sources` allow users to specify which source of the words suggestions come from, can be multiple sources, currently supporting `cui` (CUI2Vec) and `es` (elastic search index) separated by comma `,`, `merged` allow users to choose if the results are merged together or separated from each other, if merged, the scores will be normalized, if separated, the scores are their original scores.
 
 ### Production
 
@@ -62,7 +73,7 @@ python3 main.py -p
 By calling API:
 
 ```
-http://localhost:6688/search?retSize=5&pool=20&term=cancer
+http://localhost:6688/search?retSize=5&pool=20&sources=cui,es&merged=false&term=cancer
 ```
 
 The result is in `json` format:
