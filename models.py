@@ -151,7 +151,7 @@ class Index():
         score = calculateSimilarity(D, f1, f2, f12)
         self.wordsRanking[index] = {
             "term" : s2,
-            "score" : score
+            "score" : float("{0:.3f}".format(score))
         }
 
     """
@@ -171,7 +171,7 @@ class Index():
             process.join()
         # sort the items in descending order by scores
         try:
-            totalResult = sorted(self.wordsRanking, key = lambda i : i['score'], reverse = True)
+            totalResult = sorted(self.wordsRanking, key = lambda i : i["score"], reverse = True)
         except:
             self.getESWordsRanking(word, size, pool)
         returned = []
@@ -236,7 +236,7 @@ class CUI2Vec():
             alternatives = matrix[intWordCUI]
         except:
             alternatives = ""
-        if alternatives is not "":
+        if alternatives != "":
             res = convertCUI2Term(alternatives, self.size)
         return res
 """
@@ -263,7 +263,7 @@ def convertCUI2Term(alternatives, size):
     count = 0
     # sort the list by scores in descending order
     try:
-        rankedInfo = sorted(infos, key = lambda i : i['score'], reverse = True)
+        rankedInfo = sorted(infos, key = lambda i : i["score"], reverse = True)
     except:
         convertCUI2Term(alternatives, size)
     for item in rankedInfo:
@@ -272,22 +272,32 @@ def convertCUI2Term(alternatives, size):
             returned.append(item)
     return returned
 
-def minmax(list1, list2, size):
-    maximumScoreTermL1 = max(list1, key=lambda x:x['score'])['score']
-    minimumScoreTermL1 = min(list1, key=lambda x:x['score'])['score']
-    maximumScoreTermL2 = max(list2, key=lambda x:x['score'])['score']
-    minimumScoreTermL2 = min(list2, key=lambda x:x['score'])['score']
-    for term1 in list1:
-        term1['score'] = (term1['score'] - minimumScoreTermL1) / (maximumScoreTermL1 - minimumScoreTermL1)
-    for term2 in list2:
-        term2['score'] = (term2['score'] - minimumScoreTermL2) / (maximumScoreTermL2 - minimumScoreTermL2)
-    unorderedRes = list1 + list2
+def minmax(res, size):
+    unorderedRes = []
+    scoreDict = {}
+    for k in res:
+        print(res[k])
+        if res[k] != []:
+            maxScore = max(res[k], key=lambda x:x["score"])["score"]
+            minScore = min(res[k], key=lambda x:x["score"])["score"]
+            scoreDict[k] = {
+                "max" : maxScore,
+                "min" : minScore
+            }
+    for ky in scoreDict:
+        if res[ky] != []:
+            for term in res[ky]:
+                term["score"] = (term["score"] - scoreDict[ky]["min"]) / (scoreDict[ky]["max"] - scoreDict[ky]["min"])
+                term["source"] = ky
+            unorderedRes = unorderedRes + res[ky]
+
     try:
-        finalRes = sorted(unorderedRes, key = lambda i : i['score'], reverse = True)
+        finalRes = sorted(unorderedRes, key = lambda i : i["score"], reverse = True)
     except:
-        minmax(list1, list2, size)
+        minmax(res, size)
+    
     for t in finalRes:
-        t['score'] = float("{0:.3f}".format(t['score']))
+        t["score"] = float("{0:.3f}".format(t["score"]))
     if size < len(finalRes):
         return finalRes[0:size]
     else:
