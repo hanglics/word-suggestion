@@ -1,6 +1,5 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-import json
 from flask_jsonpify import jsonpify
 from middleware import *
 from waitress import serve
@@ -24,9 +23,16 @@ class getWordsSuggestions(Resource):
         else:
             res = getWordSuggestions(word, int(size), int(pool), merged, sources)
             return jsonpify(res);
-            
+
+
+class getSetting(Resource):
+    def get(self):
+        res = getSettings()
+        return jsonpify(res)
+
 # example url -> /search?retSize=5&pool=5&sources=cui,es&merged=false&term=cancer
 api.add_resource(getWordsSuggestions, "/search")
+api.add_resource(getSetting, "/settings")
 
 if __name__ == "__main__":
     arguments = sys.argv

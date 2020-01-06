@@ -25,4 +25,21 @@ def getWordSuggestions(word, size, pool, merged, sources):
         return normalizedScoreRes
     else:
         return res
-        
+
+def getSettings():
+    default_pool = ESConfig["default_pool"]
+    default_retSize = ESConfig["default_retSize"]
+    max_retSize = ESConfig["max_retSize"]
+    max_pool = ESConfig["max_pool"]
+    merged = ESConfig["merged"]
+    sources = ESConfig["sources"]
+    res = {
+        "default_pool": default_pool,
+        "default_retSize": default_retSize,
+        "max_retSize": max_retSize,
+        "max_pool": max_pool,
+        "merged": merged,
+        "sources": sources
+    }
+
+    return res
