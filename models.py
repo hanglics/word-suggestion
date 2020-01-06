@@ -170,6 +170,7 @@ class Index():
         for process in threads:
             process.join()
         # sort the items in descending order by scores
+        totalResult = []
         try:
             totalResult = sorted(self.wordsRanking, key = lambda i : i["score"], reverse = True)
         except:
