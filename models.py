@@ -6,6 +6,7 @@ from cui_methods import *
 from nltk.corpus import stopwords
 from threading import Thread
 import nltk
+
 nltk.download('stopwords')
 
 # Construct the CUI matrix and store as a global variable
@@ -32,6 +33,7 @@ waitressConfig = config["Waitress"]
 print("Config File Loaded.")
 print("--------------------------------------------------")
 
+
 class Index():
     """
     # An index of the documents used (retrieved from elastic search index). 
@@ -39,6 +41,7 @@ class Index():
     # word: the input word from user to get alternatives
     # pool: specifies how many documents to be retrieved from the elastic search index
     """
+
     def __init__(self, word, pool):
         # Get all configurations from the config file for elastic search index
         self.username = ESConfig["username"]
@@ -59,8 +62,8 @@ class Index():
         url = self.preurl + "/" + self.indexName + "/_search"
         # Construct the params for the url
         param = {
-            "size" : self.pool,
-            "q" : word
+            "size": self.pool,
+            "q": word
         }
         # Make the request and get response from the ES index
         # The response is documents retrieved from ES index
@@ -75,20 +78,21 @@ class Index():
         self.D = self.getDocumentCount(query)
         # Construct the empty total result list, the length is the length of docs
         self.wordsRanking = [{} for item in self.docs]
-    
+
     """
     # query is a list of word(s) that passed into the ES index to get the count
     # query length can be 1 or 2
     # if query length is 1, then get number of relevant documents from ES index based on this single word
     # if query length is 2, then get the intersection number of relevant documents from ES index based on the two words
     """
+
     def getDocumentCount(self, query):
         url = self.preurl + "/" + self.indexName + "/_count"
         if len(query) is 1:
-            response = requests.get(url, params={"q" : query}, auth=(self.username, self.secret))
+            response = requests.get(url, params={"q": query}, auth=(self.username, self.secret))
         elif len(query) is 2:
             param = {
-                "q" : "(" + str(query[0]) + ")AND(" + str(query[1]) + ")"
+                "q": "(" + str(query[0]) + ")AND(" + str(query[1]) + ")"
             }
             response = requests.get(url, params=param, auth=(self.username, self.secret))
         else:
@@ -96,7 +100,7 @@ class Index():
         results = json.loads(response.content)
         # result["count"] can be 0
         return results["count"]
-    
+
     """ 
     # process the documents retrieved from the ES index
     # the original documents retrieved contain a lot redundent information
@@ -104,12 +108,13 @@ class Index():
     # concat title and abstract together then split into words
     # assign a list of candicate words as finalRes to self.docs
     """
+
     def createDocuments(self):
         res = self.res
         docs = res["hits"]["hits"]
         absTitleStr = []
         documents = []
-        translator = str.maketrans('','',string.punctuation)
+        translator = str.maketrans('', '', string.punctuation)
         for item in docs:
             title = item["_source"]["title"]
             abstract = item["_source"]["abstract"]
@@ -140,6 +145,7 @@ class Index():
     # s2 is the word from self.docs to compare with s1
     # index is the number passed in to allocate position in self.wordsRanking
     """
+
     def pmiSimilarity(self, s1, s2, index):
         D = self.D
         # to get f1 f2 and f12, three requests to the ES index are made
@@ -150,8 +156,8 @@ class Index():
         f12 = self.getDocumentCount([s1, s2])
         score = calculateSimilarity(D, f1, f2, f12)
         self.wordsRanking[index] = {
-            "term" : s2,
-            "score" : float("{0:.3f}".format(score))
+            "term": s2,
+            "score": float("{0:.3f}".format(score))
         }
 
     """
@@ -160,6 +166,7 @@ class Index():
     # size is the return size which means how many terms to be returned
     # pool is the number of documents to be retrieved from the ES index
     """
+
     def getESWordsRanking(self, word, size, pool):
         threads = []
         # use multithreading to speed up the process
@@ -172,7 +179,7 @@ class Index():
         # sort the items in descending order by scores
         totalResult = []
         try:
-            totalResult = sorted(self.wordsRanking, key = lambda i : i["score"], reverse = True)
+            totalResult = sorted(self.wordsRanking, key=lambda i: i["score"], reverse=True)
         except:
             self.getESWordsRanking(word, size, pool)
         returned = []
@@ -187,7 +194,8 @@ class Index():
                 count += 1
                 returned.append(item)
         return returned
-    
+
+
 """
 # A CUI 2 Vec module that adopt CUI and distance measure to get the similar words as alternatives
 # word is the input word from user
@@ -197,6 +205,8 @@ class Index():
 # so the max return size is 10 in this case
 # if larger return size is required, need to regenerate the bin file
 """
+
+
 class CUI2Vec():
     def __init__(self, word):
         wordCUI = ""
@@ -210,12 +220,13 @@ class CUI2Vec():
             self.wordCUI = ""
         if wordCUI is not "":
             self.wordCUI = wordCUI
-    
+
     """
     # from a word's cui, find the 10 relevant cuis in the pre-loaded matrix
     # /data/cui2vec_precomputed.bin
     # size is the returned size
     """
+
     def findAlternativeTerms(self, size):
         alternatives = ""
         res = []
@@ -240,11 +251,15 @@ class CUI2Vec():
         if alternatives != "":
             res = convertCUI2Term(alternatives, self.size)
         return res
+
+
 """
 # from a list of cuis, convert the cuis to terms by looking in the pre-loaded dict
 # /data/cuis.csv
 # size is the returned size
 """
+
+
 def convertCUI2Term(alternatives, size):
     infos = []
     for key in alternatives.keys():
@@ -256,15 +271,15 @@ def convertCUI2Term(alternatives, size):
             term = ""
         if term is not "":
             info = {
-                "score" : alternatives[key],
-                "term" : term
+                "score": alternatives[key],
+                "term": term
             }
             infos.append(info)
     returned = []
     count = 0
     # sort the list by scores in descending order
     try:
-        rankedInfo = sorted(infos, key = lambda i : i["score"], reverse = True)
+        rankedInfo = sorted(infos, key=lambda i: i["score"], reverse=True)
     except:
         convertCUI2Term(alternatives, size)
     for item in rankedInfo:
@@ -273,16 +288,17 @@ def convertCUI2Term(alternatives, size):
             returned.append(item)
     return returned
 
+
 def minmax(res, size):
     unorderedRes = []
     scoreDict = {}
     for k in res:
         if res[k] != []:
-            maxScore = max(res[k], key=lambda x:x["score"])["score"]
-            minScore = min(res[k], key=lambda x:x["score"])["score"]
+            maxScore = max(res[k], key=lambda x: x["score"])["score"]
+            minScore = min(res[k], key=lambda x: x["score"])["score"]
             scoreDict[k] = {
-                "max" : maxScore,
-                "min" : minScore
+                "max": maxScore,
+                "min": minScore
             }
     for ky in scoreDict:
         if res[ky] != []:
@@ -292,10 +308,10 @@ def minmax(res, size):
             unorderedRes = unorderedRes + res[ky]
 
     try:
-        finalRes = sorted(unorderedRes, key = lambda i : i["score"], reverse = True)
+        finalRes = sorted(unorderedRes, key=lambda i: i["score"], reverse=True)
     except:
         minmax(res, size)
-    
+
     for t in finalRes:
         t["score"] = float("{0:.3f}".format(t["score"]))
     if size < len(finalRes):
