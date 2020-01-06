@@ -6,8 +6,6 @@ from models import *
 # word is the user input word
 # pool is the number of documents retrieved from ES index
 """
-
-
 def getWordSuggestions(word, size, pool, merged, sources):
     splitedSource = sources.split(",")
     splitedSource = [x.upper() for x in splitedSource]
@@ -27,21 +25,4 @@ def getWordSuggestions(word, size, pool, merged, sources):
         return normalizedScoreRes
     else:
         return res
-
-
-def getSettings():
-    default_retSize = ESConfig["default_retSize"]
-    default_pool = ESConfig["default_pool"]
-    max_retSize = ESConfig["max_retSize"]
-    max_pool = ESConfig["max_pool"]
-    merged = ESConfig["merged"]
-    sources = ESConfig["sources"]
-    res = {
-        "default_retSize": default_retSize,
-        "default_pool": default_pool,
-        "max_retSize": max_retSize,
-        "max_pool": max_pool,
-        "merged": merged,
-        "sources": sources
-    }
-    return res
+        

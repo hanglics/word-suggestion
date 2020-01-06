@@ -2,14 +2,11 @@ import math
 
 """Pointwise Mutual Information"""
 
-
 def pmi(x, y, xy):
     return math.log2((xy / x) / y)
 
-
-def npmi(xy, pmiScore):
-    return pmiScore / math.log2(xy)
-
+def npmi(xy, pmi):
+    return pmi / math.log2(xy)
 
 def calculateSimilarity(D, f1, f2, f12):
     """
