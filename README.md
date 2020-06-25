@@ -16,6 +16,11 @@ What things you need to install the software and how to install them
 pip3 install waitress flask flask-restful flask_jsonpify requests nltk
 ```
 
+If you are trying to deploy it locally, install `flask-cors`
+```
+pip3 install flask-cors
+```
+
 ### Development
 
 To run in development mode
@@ -59,7 +64,9 @@ Added another two parameters `sources` and `merged`, where `sources` allow users
 
 ### Production
 
-For production server, configure the host for waitress server in `config.json` file.
+For production server, configure the host for waitress server in `config.json` file, a template is provided as `config.json.template`
+The `ES` specifies the Elastic Search Index which contains all the PubMed Articles
+The `Cui2Vec` is just a simple binary file which is pre-generated that contains the similarity scores of each pair of CUI
 And using waitress server by calling
 
 ```
