@@ -68,8 +68,6 @@ class Index():
         # Make the request and get response from the ES index
         # The response is documents retrieved from ES index
         response = requests.get(url, params=param, auth=(self.username, self.secret))
-        print(url)
-        print(response.content)
         res = json.loads(response.content)
         self.res = res
         self.docs = []
