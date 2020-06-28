@@ -103,10 +103,10 @@ class Index():
 
     """ 
     # process the documents retrieved from the ES index
-    # the original documents retrieved contain a lot redundent information
+    # the original documents retrieved contain a lot redundant information
     # we only need title and abstract
     # concat title and abstract together then split into words
-    # assign a list of candicate words as finalRes to self.docs
+    # assign a list of candidate words as finalRes to self.docs
     """
 
     def createDocuments(self):
@@ -278,6 +278,7 @@ def convertCUI2Term(alternatives, size):
     returned = []
     count = 0
     # sort the list by scores in descending order
+    rankedInfo = []
     try:
         rankedInfo = sorted(infos, key=lambda i: i["score"], reverse=True)
     except:
@@ -293,7 +294,7 @@ def minmax(res, size):
     unorderedRes = []
     scoreDict = {}
     for k in res:
-        if res[k] != []:
+        if res[k]:
             maxScore = max(res[k], key=lambda x: x["score"])["score"]
             minScore = min(res[k], key=lambda x: x["score"])["score"]
             scoreDict[k] = {
@@ -301,11 +302,13 @@ def minmax(res, size):
                 "min": minScore
             }
     for ky in scoreDict:
-        if res[ky] != []:
+        if res[ky]:
             for term in res[ky]:
                 term["score"] = (term["score"] - scoreDict[ky]["min"]) / (scoreDict[ky]["max"] - scoreDict[ky]["min"])
                 term["source"] = ky
             unorderedRes = unorderedRes + res[ky]
+
+    finalRes = []
 
     try:
         finalRes = sorted(unorderedRes, key=lambda i: i["score"], reverse=True)

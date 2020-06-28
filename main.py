@@ -3,11 +3,13 @@ from flask_restful import Resource, Api
 from flask_jsonpify import jsonpify
 from middleware import *
 from waitress import serve
+# from flask_cors import CORS
 from models import waitressConfig, ESConfig
 import sys
 
 app = Flask(__name__)
 api = Api(app)
+# CORS(app)
 
 
 class getWordsSuggestions(Resource):
